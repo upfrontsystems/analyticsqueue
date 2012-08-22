@@ -28,7 +28,7 @@ class RedisQueueArgs(object):
 
 
 def processqueue():
-    args = QueueArgs()
+    args = RedisQueueArgs()
     setup_loghandlers(args)
     setup_redis(args)
     try:
