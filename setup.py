@@ -41,8 +41,8 @@ setup(name='upfront.analyticsqueue',
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
-      processqueue=upfrontsystems.q.scripts.queueprocessor:processqueue
-      rqinfo=upfrontsystems.q.scripts.rqinfo:main
+      processqueue=upfront.analyticsqueue.scripts.queueprocessor:processqueue
+      rqinfo=upfront.analyticsqueue.scripts.rqinfo:main
       rqdashboard=rq_dashboard.scripts.rq_dashboard:main
       """,
       )
