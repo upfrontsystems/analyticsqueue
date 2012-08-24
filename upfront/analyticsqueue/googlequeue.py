@@ -35,6 +35,6 @@ class GoogleQueue(object):
         page.referer = entry['referer'] 
         page.title = entry['title']
         #page.charset = entry['charset']
-        #page.load_time = entry['']
+        #page.load_time = entry['load_time']
 
         tracker.track_pageview(page, session, visitor)
