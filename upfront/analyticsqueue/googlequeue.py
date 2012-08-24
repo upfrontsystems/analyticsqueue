@@ -14,11 +14,11 @@ class GoogleQueue(object):
 
         visitor = Visitor()
         visitor.current_visit_time = now
-        visitor.ip_address = entry['ip_address'] 
+        visitor.ip_address = entry['remote_address'] 
         visitor.user_agent = entry['user_agent']
         visitor.locale = entry['locale']
+        visitor.unique_id = entry['unique_id']
         # possible other data:
-        #visitor.unique_id = None
         #visitor.first_visit_time = now
         #visitor.previous_visit_time = now
         #visitor.visit_count = 1
@@ -32,5 +32,9 @@ class GoogleQueue(object):
         # drop the science or maths from the path
         path_elements = ('',) + entry['path'][2:]
         page = Page('/'.join(path_elements))
+        page.referer = entry['referer'] 
+        page.title = entry['title']
+        #page.charset = entry['charset']
+        #page.load_time = entry['']
 
         tracker.track_pageview(page, session, visitor)
