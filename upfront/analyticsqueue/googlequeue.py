@@ -29,9 +29,7 @@ class GoogleQueue(object):
 
         session = Session()
 
-        # drop the science or maths from the path
-        path_elements = ('',) + entry['path'][2:]
-        page = Page('/'.join(path_elements))
+        page = Page(entry['path'])
         page.referer = entry['referer'] 
         page.title = entry['title']
         #page.charset = entry['charset']
