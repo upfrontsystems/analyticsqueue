@@ -16,7 +16,7 @@ class RedisQueueArgs(object):
     """
     def __init__(self):
         self.host = 'localhost'
-        self.port = 6379
+        self.port = 6666
         self.db = 0
 
         self.burst = False
