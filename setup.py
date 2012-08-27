@@ -36,6 +36,7 @@ setup(name='upfront.analyticsqueue',
       extras_require={
           'test': [
               'mock_http',
+              'plone.app.testing',
           ],
       },
       entry_points="""
