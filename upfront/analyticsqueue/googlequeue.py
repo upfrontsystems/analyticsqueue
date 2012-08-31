@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from pyga.requests import Tracker, Page, Session, Visitor
+from pyga.requests import Tracker, Page, Session
+
+from upfront.analyticsqueue.entities import Visitor
 
 
 class GoogleQueue(object):
@@ -12,16 +14,8 @@ class GoogleQueue(object):
         # make the call to google analytics
         tracker = Tracker(entry['gacode'], entry['domain'])
 
-        visitor = Visitor()
-        visitor.current_visit_time = now
-        visitor.ip_address = entry['remote_address'] 
-        visitor.user_agent = entry['user_agent']
-        visitor.locale = entry['locale']
-        visitor.unique_id = entry['unique_id']
+        visitor = Visitor(entry)
         # possible other data:
-        #visitor.first_visit_time = now
-        #visitor.previous_visit_time = now
-        #visitor.visit_count = 1
         #visitor.flash_version = None
         #visitor.java_enabled = None
         #visitor.screen_colour_depth = None
