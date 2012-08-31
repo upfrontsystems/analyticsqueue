@@ -41,10 +41,8 @@ class Visitor(BaseVisitor):
 
     def _generate_unique_id(self):
         self.userid = self.settings.get('AUTHENTICATED_USER', 'Anonymous')
-        if self.userid != 'Anonymous':
-            self.unique_id = int(hashlib.md5(self.userid).hexdigest(), 16)
-        else: 
-            self.unique_id = int(hashlib.md5(self.ip_address).hexdigest(), 16)
+        seed = '%s%s%s' %(self.userid, self.user_agent, self.ip_address)
+        self.unique_id = int(hashlib.md5(seed).hexdigest(), 16) & 0x7fffffff
         return self.unique_id
 
 
