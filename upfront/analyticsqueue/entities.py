@@ -56,21 +56,17 @@ class DateProcessor(object):
         return date
 
     @classmethod
-    def process(context, historical_date, **extra):
-        if isinstance(historical_date, types.StringType):
-            if 'T' in historical_date:
-                return datetime.datetime.strptime(
-                    historical_date, '%Y-%m-%dT%H:%M:%S.%f')
-            else:
-                return datetime.datetime.strptime(
-                    historical_date, '%Y-%m-%d %H:%M:%S.%f')
-        return historical_date
+    def process(context, logged_date, **extra):
+        if isinstance(logged_date, types.StringType):
+            return datetime.datetime.strptime(
+                logged_date, '%Y-%m-%dT%H:%M:%S.%f')
+        return logged_date
 
 
 class CurrentDateProcessor(DateProcessor):
     
     @classmethod
-    def process(context, historical_date, **extra):
+    def process(context, logged_date, **extra):
         now = datetime.datetime.utcnow()
         return now
 
@@ -78,7 +74,7 @@ class CurrentDateProcessor(DateProcessor):
 class PreviousDateProcessor(DateProcessor):
     
     @classmethod
-    def process(context, historical_date, **extra):
+    def process(context, logged_date, **extra):
         prev_date = extra.get('previous_visit_date')
         if prev_date:
             return datetime.datetime.strptime(
