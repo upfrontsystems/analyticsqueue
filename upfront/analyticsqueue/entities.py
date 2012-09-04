@@ -22,7 +22,7 @@ class Visitor(BaseVisitor):
         history = connection.hgetall(visitor_key)
         
         fields = {'first_visit_time':    {'processor': DateProcessor},
-                  'previous_visit_time': {'processor': DateProcessor},
+                  'previous_visit_time': {'processor': PreviousDateProcessor},
                   'current_visit_time':  {'processor': CurrentDateProcessor},
                   'visit_count':         {'processor': CountProcessor},
                  }
@@ -59,6 +59,14 @@ class CurrentDateProcessor(object):
     def process(context, historical_date, **extra):
         now = datetime.utcnow()
         return now
+
+
+class PreviousDateProcessor(object):
+    
+    @classmethod
+    def process(context, historical_date, **extra):
+        now = datetime.utcnow()
+        return extra.get('previous_visit_date', now)
 
 
 class CountProcessor(object):
