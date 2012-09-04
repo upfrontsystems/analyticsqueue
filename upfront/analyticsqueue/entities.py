@@ -1,5 +1,6 @@
 import hashlib
 import datetime
+import types
 
 from redis import Redis
 from pyga.entities import Visitor as BaseVisitor
@@ -34,7 +35,7 @@ class Visitor(BaseVisitor):
             value = value or getattr(self, key)
             value = processor.process(value, **history)
             setattr(self, key, value)
-            history[key] = value
+            history[key] = processor.serialize(value)
 
         connection.hmset(visitor_key, history)
 
@@ -49,11 +50,24 @@ class Visitor(BaseVisitor):
 class DateProcessor(object):
     
     @classmethod
+    def serialize(context, date):
+        if isinstance(date, datetime.datetime):
+            return date.isoformat()
+        return date
+
+    @classmethod
     def process(context, historical_date, **extra):
+        if isinstance(historical_date, types.StringType):
+            if 'T' in historical_date:
+                return datetime.datetime.strptime(
+                    historical_date, '%Y-%m-%dT%H:%M:%S.%f')
+            else:
+                return datetime.datetime.strptime(
+                    historical_date, '%Y-%m-%d %H:%M:%S.%f')
         return historical_date
 
 
-class CurrentDateProcessor(object):
+class CurrentDateProcessor(DateProcessor):
     
     @classmethod
     def process(context, historical_date, **extra):
@@ -61,16 +75,23 @@ class CurrentDateProcessor(object):
         return now
 
 
-class PreviousDateProcessor(object):
+class PreviousDateProcessor(DateProcessor):
     
     @classmethod
     def process(context, historical_date, **extra):
-        now = datetime.datetime.utcnow()
-        return extra.get('previous_visit_date', now)
+        prev_date = extra.get('previous_visit_date')
+        if prev_date:
+            return datetime.datetime.strptime(
+                prev_date, '%Y-%m-%dT%H:%M:%S.%f')
+        return datetime.datetime.utcnow()
 
 
 class CountProcessor(object):
     
     @classmethod
+    def serialize(context, counter):
+        return counter
+    
+    @classmethod
     def process(context, historical_counter, **extra):
-        return int(historical_counter) +1 
+        return int(historical_counter) +0 
