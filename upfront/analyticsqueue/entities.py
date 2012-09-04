@@ -32,7 +32,7 @@ class Visitor(BaseVisitor):
             
             value = history.get(key)
             value = value or getattr(self, key)
-            value = processor.process(value, history)
+            value = processor.process(value, **history)
             setattr(self, key, value)
             history[key] = value
 
@@ -57,7 +57,7 @@ class CurrentDateProcessor(object):
     
     @classmethod
     def process(context, historical_date, **extra):
-        now = datetime.utcnow()
+        now = datetime.datetime.utcnow()
         return now
 
 
@@ -65,7 +65,7 @@ class PreviousDateProcessor(object):
     
     @classmethod
     def process(context, historical_date, **extra):
-        now = datetime.utcnow()
+        now = datetime.datetime.utcnow()
         return extra.get('previous_visit_date', now)
 
 
