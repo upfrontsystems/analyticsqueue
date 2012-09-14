@@ -5,7 +5,7 @@ from pyga.requests import Tracker, Page, Session
 from upfront.analyticsqueue.entities import Visitor
 
 
-class GoogleQueue(object):
+class GAQueueProcessor(object):
 
     @classmethod
     def deliver(cls, entry):
