@@ -5,6 +5,7 @@ from redis import Redis
 from redis.exceptions import ConnectionError
 
 from rq import Queue, Worker
+from rq.worker import red
 from rq.scripts.rqworker import format_colors
 from rq.scripts import setup_redis
 
@@ -18,6 +19,11 @@ class AnalyticsQueueConfig(argparse.ArgumentParser):
         self.setup_args()
         self.parse_args()
         self.setup_loghandlers()
+    
+    def parse_args(self):
+        args = super(AnalyticsQueueConfig, self).parse_args()
+        for name, value in args._get_kwargs():
+            setattr(self, name, value)
 
     def setup_args(self):
         self.add_argument('--host',
@@ -56,13 +62,14 @@ class AnalyticsQueueConfig(argparse.ArgumentParser):
         self.add_argument('--verbose',
                            '-v',
                            action='store_true',
-                           default=False, help='Show more output')
+                           default=False,
+                           help='Show more output')
 
         self.add_argument('queues',
-                           nargs='*',
-                           default = ['google_analytics_q',
-                                      'piwik_analytics_q'],
-                           help='The queues to listen on (default: \'default\')')
+                          nargs='*',
+                          default = ['google_analytics_q',
+                                     'piwik_analytics_q'],
+                          help='The queues to listen on (default: \'default\')')
 
     def setup_loghandlers(self):
         if self.verbose:
@@ -73,18 +80,19 @@ class AnalyticsQueueConfig(argparse.ArgumentParser):
             self.formatter = format_colors
 
         handlers.NullHandler(bubble=False).push_application()
+
         handler = handlers.StreamHandler(sys.stdout,
                                          level=self.loglevel,
                                          bubble=False)
         if self.formatter:
-            handler.formatter = formatter
+            handler.formatter = self.formatter
         handler.push_application()
+
         handler = handlers.StderrHandler(level=logbook.WARNING,
                                          bubble=False)
         if self.formatter:
-            handler.formatter = formatter
+            handler.formatter = self.formatter
         handler.push_application()
-
 
 def processqueue():
     config = AnalyticsQueueConfig()
@@ -98,10 +106,10 @@ def processqueue():
         worker = Worker.find_by_key(worker_name)
         if worker:
             # get the stale worker to stop in order to start a new one
-            print 'Stopping stale worker.'
-            worker.register_death() 
-        else:
-            worker = Worker(queues, name=config.name)
+            worker.log.info(red('Stopping stale worker %s' % (worker.name,)))
+            worker.register_death()
+
+        worker = Worker(queues, name=config.name)
         worker.work(burst=config.burst)
     except ConnectionError as e:
         print(e)
