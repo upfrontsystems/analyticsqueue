@@ -90,4 +90,4 @@ class CountProcessor(object):
     
     @classmethod
     def process(context, historical_counter, **extra):
-        return int(historical_counter) +0 
+        return int(historical_counter) +1
